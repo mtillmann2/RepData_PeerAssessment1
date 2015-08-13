@@ -14,17 +14,32 @@ https://cran.r-project.org/web/packages/dplyr/index.html. The
 following code will load the 'dplyr' package as well as the
 'activity.csv' dataset into R:
 
-```{r}
+
+```r
 data <- read.csv('activity.csv')
 
 library(dplyr)
+```
+
+```
+## 
+## Attaching package: 'dplyr'
+## 
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+## 
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
 ```
 
 
 ## What is mean total number of steps taken per day?
 
 A histogram of the total number of steps taken each day:
-```{r}
+
+```r
 data1 <-group_by(data, date)
 sum_data1 <-summarize(data1, sum(steps))
 steps_per_day<- sum_data1$`sum(steps)`
@@ -32,14 +47,26 @@ hist(steps_per_day,main="Total Steps per Day",
      xlab= "Number of Steps")
 ```
 
+![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-1.png) 
+
 Mean of the total number of steps taken each day:
-```{r}
+
+```r
 mean (sum_data1$`sum(steps)`,na.rm= TRUE)
 ```
 
+```
+## [1] 10766.19
+```
+
 Median of the total number of steps taken each day:
-```{r}
+
+```r
 median (sum_data1$`sum(steps)`,na.rm= TRUE)
+```
+
+```
+## [1] 10765
 ```
 
 
@@ -48,7 +75,8 @@ median (sum_data1$`sum(steps)`,na.rm= TRUE)
 Time-series plot of the 5-min intervals and the average number of
 steps, averaged across all days in the dataset:
 
-```{r}
+
+```r
 data2 <- group_by(data,interval) 
 average_data2 <- summarize(data2, mean(steps, na.rm=TRUE))
 plot(average_data2, type="l",main="Average Number of Steps/Interval",
@@ -56,11 +84,21 @@ plot(average_data2, type="l",main="Average Number of Steps/Interval",
      ylab= "Average Number of Steps" )
 ```
 
+![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png) 
+
 The 5-min interval containing the maximum number of steps averaged
 across all of the days in the dataset:
-```{r}
+
+```r
 max_steps <-subset(average_data2,(average_data2[2]==max(average_data2[2])))
 max_steps[1]
+```
+
+```
+## Source: local data frame [1 x 1]
+## 
+##   interval
+## 1      835
 ```
 
 
@@ -69,14 +107,20 @@ In order to replace the missing values in the dataset, the following
 steps have been taken:
 
 First, the total number of missing values has been calculated:
-```{r}
+
+```r
 sum(is.na(data))
+```
+
+```
+## [1] 2304
 ```
 
 Second, the missing values have been replaced with the mean value of
 the number of steps within the 5-min interval averaged across all
 days in the dataset. 
-```{r}
+
+```r
 im_data <- data.frame()
 for(i in unique(data$interval)){
     x <- subset(data,data$interval == i)
@@ -86,7 +130,8 @@ for(i in unique(data$interval)){
 ```
 
 A histogram of the data with imputed values:
-```{r}
+
+```r
 im_data <-group_by(im_data, date)
 sum_im_data <-summarize(im_data, sum(steps))
 steps_per_day_im<- sum_im_data$`sum(steps)`
@@ -94,14 +139,26 @@ hist(steps_per_day_im, main="Total Steps per Day (w/ imputed values)",
      xlab= "Number of Steps")
 ```
 
+![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9-1.png) 
+
 Mean of the total number of steps taken each day:
-```{r}
+
+```r
 mean(sum_im_data$`sum(steps)`)
 ```
 
+```
+## [1] 10766.19
+```
+
 Median of the total number of steps taken each day:
-```{r}
+
+```r
 median(sum_im_data$`sum(steps)`)
+```
+
+```
+## [1] 10766.19
 ```
 
 The above method of imputing values for the missing data does not
@@ -114,7 +171,8 @@ median. The median is now reported as being equal to the mean.
 Add a column that indicates whether the date falls on a weekday or
 weekend:
 
-```{r}
+
+```r
 im_data2 <- arrange(im_data, date)
 im_data2 <- mutate(im_data2,weekdays(as.Date(date)))
 colnames(im_data2)[4] <- 'Day'
@@ -134,7 +192,8 @@ Panel that contains time-series plots of the 5-min intervals and the
 average number of steps, averaged across all days, contrasting
 weekday with weekend activity:
 
-```{r}
+
+```r
 par(mfcol=c(1,2))
 
 imd2_weekday <- group_by(imd2_weekday,interval) 
@@ -151,6 +210,8 @@ plot(average_imd2_weekend, type="l",
      xlab= "5-min Interval (in Military time)", 
      ylab= "Avg # of Steps")
 ```
+
+![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-13-1.png) 
 
 
 
